@@ -1,0 +1,32 @@
+{
+  "private": true,
+  "name": "gulp-sass-glob",
+  "version": "0.0.1",
+  "description": "@import glob patterns",
+  "author": "Alex Southan",
+  "contributors" : [],
+  "license": "MIT",
+  "homepage": "https://github.com/southan/gulp-sass-glob",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/southan/gulp-sass-glob"
+  },
+  "bugs": {
+    "url": "https://github.com/southan/gulp-sass-glob/issues"
+  },
+  "dependencies": {
+    "glob": "^5.0.15",
+    "through2": "^2.0.0",
+    "vinyl-fs": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "keywords": [
+    "gulpplugin",
+    "scss",
+    "sass",
+    "glob",
+    "import"
+  ]
+}
