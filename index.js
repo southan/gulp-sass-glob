@@ -26,8 +26,9 @@ module.exports = function () {
 				files = glob.sync( path.join( dirname, itemsResult[1] ) );
 				files.forEach(function ( filename ) {
 					var stats = fs.statSync( filename );
-					if ( ! stats.isDirectory() )
-						replace.push( path.relative( dirname, filename ) );
+					if ( ! stats.isDirectory() ) {
+						replace.push( path.relative( dirname, filename ).replace( "\\", "/" ) );
+					}
 				});
 
 				replaced = replaced.replace( itemsResult[0], '"' + replace.join( '","' ) + '"' );
