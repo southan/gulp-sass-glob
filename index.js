@@ -1,43 +1,54 @@
-"use strict";
-
-var
-	path    = require( "path" ),
-	fs      = require( "fs" ),
-	through = require( "through2" ),
-	glob    = require( "glob" );
+var path    = require( "path" );
+var through = require( "through2" );
+var glob    = require( "glob" );
 
 module.exports = function () {
-	return through.obj(function ( file, env, cb ) {
-		var contents = file.contents.toString( "utf-8" ),
-			replaced = contents,
-			dirname  = path.dirname( file.path ),
-			imports  = /@import\s+([\s\S]+?);/g,
-			items    = /["']([^\*"']+\*[^"']*)["']/g,
+	return through.obj( function ( theFile, env, cb ) {
+		var content = theFile.contents.toString( "utf-8" );
+		var dirname = path.dirname( theFile.path );
+		var replace;
 
-			importsResult,
-			itemsResult,
-			replace,
-			files;
+		var regex = /@import\s+([^;\*]+\*[^;]+);/g;
+		var found;
+		var items;
+		var paths;
+		var files;
+		var item;
+		var file;
+		var i;
+		var j;
+		var k;
+		var l;
 
-		while ( ( importsResult = imports.exec( contents ) ) !== null ) {
-			while ( ( itemsResult = items.exec( importsResult[1] ) ) !== null ) {
-				replace = [];
+		while ( ( found = regex.exec( content ) ) !== null ) {
+			items = found[1].split( "," );
+			paths = [];
 
-				files = glob.sync( path.join( dirname, itemsResult[1] ) );
-				files.forEach(function ( filename ) {
-					var stats = fs.statSync( filename );
-					if ( ! stats.isDirectory() ) {
-						replace.push( path.relative( dirname, filename ).replace( "\\", "/" ) );
+			for ( i = 0, j = items.length; i < j; ++i ) {
+				item = items[ i ].trim().slice( 1, -1 ); // Path will be quoted
+
+				if ( item.indexOf( "*" ) !== -1 ) {
+					files = glob.sync( path.join( dirname, item ) );
+
+					for ( k = 0, l = files.length; k < l; ++k ) {
+						file = files[ k ];
+						if ( file !== theFile.path && path.extname( file ) === ".scss" )
+							paths.push( "'" + path.relative( dirname, file ).replace( "\\", "/" ) + "'" );
 					}
-				});
-
-				replaced = replaced.replace( itemsResult[0], '"' + replace.join( '","' ) + '"' );
+				} else {
+					paths.push( "'" + item + "'" );
+				}
 			}
+
+			if ( ! replace )
+				replace = content;
+
+			replace = replace.replace( found[0], paths.length ? "@import " + paths.join( "," ) + ";" : "" );
 		}
 
-		if ( replaced !== contents )
-			file.contents = new Buffer( replaced );
+		if ( replace )
+			theFile.contents = new Buffer( replace );
 
-		cb( null, file );
+		cb( null, theFile );
 	});
 };
