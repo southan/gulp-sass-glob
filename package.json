@@ -15,9 +15,8 @@
     "url": "https://github.com/southan/gulp-sass-glob/issues"
   },
   "dependencies": {
-    "glob": "^5.0.15",
-    "through2": "^2.0.0",
-    "vinyl-fs": "^2.1.1"
+    "glob": "^7.0.0",
+    "through2": "^2.0.0"
   },
   "engines": {
     "node": ">=0.10.0"
